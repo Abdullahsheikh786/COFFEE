@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Now - Karachi Coffee Shop</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- AOS Animation Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background-color: #3b141c;
+        color: #4b3832;
+        overflow-x: hidden;
+    }
+
+    /* Hero Section */
+    .hero {
+        height: 60vh;
+        background: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93') center/cover no-repeat;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        position: relative;
+    }
+    .hero::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.4);
+    }
+    .hero h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 3rem;
+        z-index: 1;
+        animation: fadeInDown 1.2s ease-in-out;
+    }
+
+    /* Menu Section */
+    .menu {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        padding: 40px;
+    }
+    .item {
+        background: rgba(255,255,255,0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 15px;
+        text-align: center;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+    .item img {
+        width: 100%;
+        border-radius: 10px;
+        max-height: 180px;
+        object-fit: cover;
+    }
+    .item h3 {
+        margin-top: 15px;
+        font-size: 20px;
+    }
+    .item p {
+        font-weight: bold;
+        color: #6b4f4f;
+    }
+    .item button {
+        margin-top: 10px;
+        background: #f3961c;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 30px;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    .item button:hover {
+        background: #3b141c;
+    }
+
+    /* Floating Cart */
+    .cart {
+        position: fixed;
+        top: 50%;
+        right: -400px;
+        transform: translateY(-50%);
+        width: 350px;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(15px);
+        box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+        padding: 20px;
+        border-radius: 15px 0 0 15px;
+        transition: right 0.4s ease-in-out;
+        z-index: 1000;
+    }
+    .cart.show {
+        right: 0;
+    }
+    .cart h2 {
+        margin-top: 0;
+        font-size: 22px;
+    }
+    .cart-items {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+    }
+    .total {
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    /* Floating Cart Button */
+    .cart-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #f3961c;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 30px;
+        cursor: pointer;
+        z-index: 1100;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+    <h1>Brewed with Love in AS COFFEE ☕</h1>
+</div>
+
+<!-- Cart Button -->
+<div class="cart-toggle" onclick="toggleCart()">🛒 Cart</div>
+
+<!-- Menu -->
+<div class="menu">
+    <div class="item" data-aos="fade-up">
+        <img src="coffee.png" alt="Latte">
+        <h3>Latte</h3>
+        <p>Rs. 350</p>
+        <button onclick="addToCart('Latte', 350)">Add to Cart</button>
+    </div>
+    <div class="item" data-aos="fade-up" data-aos-delay="100">
+        <img src="hot beverges.webp" alt="Cappuccino">
+        <h3>Cappuccino</h3>
+        <p>Rs. 380</p>
+        <button onclick="addToCart('Cappuccino', 380)">Add to Cart</button>
+    </div>
+    <div class="item" data-aos="fade-up" data-aos-delay="200">
+        <img src="desserts.png" alt="Chocolate Brownie">
+        <h3>Ice Cream</h3>
+        <p>Rs. 250</p>
+        <button onclick="addToCart('Chocolate Brownie', 250)">Add to Cart</button>
+    </div>
+    
+</div>
+
+<!-- Cart -->
+<div class="cart" id="cart">
+    <h2>Your Cart</h2>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="total" id="cartTotal">Total: Rs. 0</div>
+    <button onclick="placeOrder()">Place Order</button>
+</div>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+AOS.init();
+
+let cart = [];
+let phone = "923218261467"; // Replace with your WhatsApp number
+
+function toggleCart() {
+    document.getElementById("cart").classList.toggle("show");
+}
+
+function addToCart(item, price) {
+    cart.push({item, price});
+    updateCart();
+    toggleCart();
+}
+
+function updateCart() {
+    let cartItemsDiv = document.getElementById("cartItems");
+    let total = 0;
+    cartItemsDiv.innerHTML = "";
+    cart.forEach((product, index) => {
+        total += product.price;
+        cartItemsDiv.innerHTML += `
+            <div class="cart-item">
+                ${product.item} - Rs.${product.price}
+                <button onclick="removeItem(${index})">❌</button>
+            </div>
+        `;
+    });
+    document.getElementById("cartTotal").innerText = `Total: Rs. ${total}`;
+}
+
+function removeItem(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+function placeOrder() {
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+    let orderDetails = cart.map(p => `${p.item} - Rs.${p.price}`).join(", ");
+    let total = cart.reduce((sum, p) => sum + p.price, 0);
+    let message = `Hello! I would like to order: ${orderDetails}. Total: Rs.${total}`;
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
+}
+</script>
+
+</body>
+</html>
